@@ -1,4 +1,11 @@
-import os, api_key
+import os
+try:
+    import api_key
+except:
+    import sys
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    import api_key
+
 os.environ['OPENAI_API_KEY'] = api_key.OPENAI_API_KEY
 # os.environ['LANGCHAIN_API_KEY'] = api_key.LANGSMITH_KEY
 
@@ -20,6 +27,13 @@ from langgraph.checkpoint.memory import MemorySaver
 class AgentWithChatGPT():
     def __init__(self):
         self._build_agent_graph()
+
+    def answer_with_session_config(self, input_message_with_config: dict):
+        # input_message = "Hello"
+        config = input_message_with_config['config']
+        input_message = input_message_with_config['message']
+        output = self.graph.invoke({"messages": input_message}, config=config)          
+        return output['messages'][-1].content
 
     def answer_static(self, input_message):
         # input_message = "Hello"
@@ -82,6 +96,9 @@ class AgentWithChatGPT():
 
 
     def _build_agent_graph(self):
+        """
+        Initialize the LLM model and build the agent graph.        
+        """
         self.llm = ChatOpenAI(model='gpt-4o-mini')
         embeddings = OpenAIEmbeddings(model='text-embedding-3-large')
         self.vector_store = InMemoryVectorStore(embeddings)
@@ -99,22 +116,22 @@ class AgentWithChatGPT():
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         all_splits = text_splitter.split_documents(docs)
         self.vector_store.add_documents(all_splits)
-        self.graph_builder = StateGraph(MessagesState)
+        graph_builder = StateGraph(MessagesState)
 
         _tools = ToolNode([self._retrieve])
 
-        self.graph_builder.add_node(self._query_or_respond)
-        self.graph_builder.add_node(_tools)
-        self.graph_builder.add_node(self._generate)
+        graph_builder.add_node(self._query_or_respond)
+        graph_builder.add_node(_tools)
+        graph_builder.add_node(self._generate)
 
-        self.graph_builder.set_entry_point("_query_or_respond") # ? is this equivalent to? .add_edge(START, "query_or_respond")
-        self.graph_builder.add_conditional_edges(
+        graph_builder.set_entry_point("_query_or_respond") # ? is this equivalent to? .add_edge(START, "query_or_respond")
+        graph_builder.add_conditional_edges(
             "_query_or_respond",
             tools_condition,
             {END: END, "tools": "tools"}
         )
-        self.graph_builder.add_edge("tools", "_generate")
-        self.graph_builder.add_edge("_generate", END)
+        graph_builder.add_edge("tools", "_generate")
+        graph_builder.add_edge("_generate", END)
 
         memory = MemorySaver()
-        self.graph = self.graph_builder.compile(checkpointer=memory)
+        self.graph = graph_builder.compile(checkpointer=memory)
