@@ -3,10 +3,14 @@
 ## Introduction
 An agent with an OpenAI LLM model as the core.
 
-Functionalities:
+### Functionalities:
 - Extract knowledge from PDF to answer questions (replace Customer Service human)
 - Answer general questions that does not require knowledge.
 - Has built-in memory to record details of the conversation, for each user indepedently.
+
+### Technical Stack
+- LLM/Agent: `langchain-openai`, `langgraph`
+- MLOps/Deployment: `fastapi`
 
 ## Installation
 ### Prerequisites
