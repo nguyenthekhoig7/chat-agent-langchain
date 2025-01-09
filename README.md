@@ -10,7 +10,7 @@ Functionalities:
 
 ## Installation
 ### Prerequisites
-Make sure you subscribed to OpenAI API and have your API key. Create a file named 'api_key.py' file with `OPENAI_API_KEY` variable:
+Make sure you subscribed to OpenAI API and have your API key. Create a file named 'api_key.py' file in this directory, with `OPENAI_API_KEY` variable:
 ```python filename="api_key.py"
 OPENAI_API_KEY = 'your-api-key
 ```
@@ -28,22 +28,22 @@ Now, the service is online (in your localhost) and you can view the API document
 Once the API server is online,
 
 1. In bash terminal, send curl request:
-    ```
+    ```bash
     curl --header "Content-Type: application/json" \
-    --request POST \
-    --data '{"message":"Hello, my name is Kelvin", "config": {"configurable": {"thread_id": "user001"}}}' \
-    http://localhost:8000/chat
+         --request POST \
+         --data '{"message":"Hello, my name is Kelvin", "config": {"configurable": {"thread_id": "user001"}}}' \
+         http://localhost:8000/chat
     ```
     Response from the API:
     > {"response":"Hello Kelvin! How can I assist you today?"}
 
 2. Check out if the model remember your name by requesting again with the same `thread_id`
 
-    ```
+    ```bash
     curl --header "Content-Type: application/json" \
-    --request POST \
-    --data '{"message":"What is my name?", "config": {"configurable": {"thread_id": "user001"}}}' \
-    http://localhost:8000/chat
+         --request POST \
+         --data '{"message":"What is my name?", "config": {"configurable":  {"thread_id": "user001"}}}' \
+         http://localhost:8000/chat
     ```
     Response from the API:
     > {"response":"Your name is Kelvin."}
