@@ -16,7 +16,7 @@ An agent with an OpenAI LLM model as the core.
 ### Prerequisites
 Make sure you subscribed to OpenAI API and have your API key. Create a file named 'api_key.py' file in this directory, with `OPENAI_API_KEY` variable:
 ```python filename="api_key.py"
-OPENAI_API_KEY = 'your-api-key
+OPENAI_API_KEY = "your-api-key"
 ```
 ### Installation
 First, install all requried dependencies with
